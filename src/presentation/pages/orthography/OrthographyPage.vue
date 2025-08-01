@@ -9,7 +9,7 @@
 
         <!-- Mensajes -->
         <template v-for="(message, index) in messages" :key="index">
-          <GptMessage v-if="message.isGpt" :text="message.text" />
+          <GptOrthographyMessage v-if="message.isGpt" :data="message.text" />
           <MyMessage v-else :text="message.text" />
         </template>
 
@@ -37,6 +37,7 @@ import MyMessage from '../../components/chat-bubbles/MyMessage.vue'
 import TypingLoader from '../../components/loaders/TypingLoader.vue'
 import { checkOrthographyUseCase } from '@/core/use-cases/checkOrthographyUseCase'
 import TextMessageBox from '@/presentation/components/chat-input-boxes/TextMessageBox.vue'
+import GptOrthographyMessage from '@/presentation/components/chat-bubbles/GptOrthographyMessage.vue'
 
 interface Message {
   text: string

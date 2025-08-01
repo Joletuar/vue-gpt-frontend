@@ -8,17 +8,22 @@ export const checkOrthographyUseCase = async (prompt: string): Promise<Orthograp
       data: { data },
     } = await apiClient.post<ApiResponse<OrthographyResponse>>('/orthography/check', { prompt })
 
+    const { accuracy_percentage, corrected_text, errors, solutions } = data
+
     return {
-      ...data,
       ok: true,
+      accuracyPercentage: accuracy_percentage,
+      solutions,
+      errors,
+      correctedText: corrected_text,
     }
   } catch {
     return {
       ok: false,
-      accuracy_percentage: 0,
+      accuracyPercentage: 0,
       solutions: [],
       errors: [],
-      corrected_text: '',
+      correctedText: '',
     }
   }
 }

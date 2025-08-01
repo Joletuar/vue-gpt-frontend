@@ -15,6 +15,10 @@ interface Solution {
   correction: string
 }
 
-export interface Orthography extends OrthographyResponse {
+export interface Orthography {
+  errors: Error[]
+  correctedText: string
+  solutions: Solution[]
+  accuracyPercentage: number
   ok: boolean
 }
