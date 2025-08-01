@@ -9,7 +9,7 @@
 
         <!-- Mensajes -->
         <template v-for="(message, index) in messages" :key="index">
-          <GptMessage v-if="message.isGpt" text="Esto es de OpenAI" />
+          <GptMessage v-if="message.isGpt" :text="message.text" />
           <MyMessage v-else :text="message.text" />
         </template>
 
@@ -21,7 +21,7 @@
     </div>
 
     <!-- Caja de texto -->
-    <TextMessageBoxFile
+    <TextMessageBox
       @sendMessage="handlePost"
       placeholder="Escribe aquí lo que deseas"
       :disableCorrections="true"
@@ -30,12 +30,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 
 import GptMessage from '../../components/chat-bubbles/GptMessage.vue'
 import MyMessage from '../../components/chat-bubbles/MyMessage.vue'
 import TypingLoader from '../../components/loaders/TypingLoader.vue'
-import TextMessageBoxFile from '@/presentation/components/chat-input-boxes/TextMessageBoxFile.vue'
+import { checkOrthographyUseCase } from '@/core/use-cases/checkOrthographyUseCase'
+import TextMessageBox from '@/presentation/components/chat-input-boxes/TextMessageBox.vue'
 
 interface Message {
   text: string
@@ -43,16 +44,14 @@ interface Message {
 }
 
 const isLoading = ref(false)
-const messages = ref<Message[]>([])
+const messages = reactive<Message[]>([])
 
 const handlePost = async (text: string) => {
   isLoading.value = true
-  messages.value.push({ text: text, isGpt: false })
+  messages.push({ text: text, isGpt: false })
 
-  // TODO: UseCase
-
+  const orthographyResp = await checkOrthographyUseCase(text)
   isLoading.value = false
-
-  // TODO: Añadir el mensaje de isGPT en true
+  messages.push({ text: JSON.stringify(orthographyResp), isGpt: true })
 }
 </script>
