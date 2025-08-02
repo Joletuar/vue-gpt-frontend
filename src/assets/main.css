@@ -31,6 +31,10 @@ em {
   @apply bg-indigo-500 text-white font-bold py-2 px-4 rounded-xl hover:bg-indigo-700 transition-all duration-200 ease-in-out;
 }
 
+.btn-stop {
+  @apply bg-red-500 text-white font-bold py-2 px-4 rounded-xl hover:bg-red-700 transition-all duration-200 ease-in-out;
+}
+
 .btn-primary:disabled {
   @apply bg-indigo-500 text-white font-bold py-2 px-4 rounded-xl opacity-50 cursor-not-allowed;
 }

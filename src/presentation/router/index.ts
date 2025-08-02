@@ -2,7 +2,7 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import DiscusserPage from '../pages/discusser/DiscusserPage.vue'
-import ProsConsStreamPage from '../pages/pros-cons-stream/ProsConsStreamPage.vue'
+import DiscusserStreamPage from '../pages/discusser-stream/DiscusserStreamPage.vue'
 import TranslatePage from '../pages/translate/TranslatePage.vue'
 import TextToAudioPage from '../pages/text-to-audio/TextToAudioPage.vue'
 import ImageGenerationPage from '../pages/image-generation/ImageGenerationPage.vue'
@@ -29,9 +29,9 @@ export const menuRoutes = [
   {
     to: '/pros-cons-stream',
     icon: 'fa-solid fa-water',
-    title: 'Como stream',
-    description: 'Con stream de mensajes',
-    component: ProsConsStreamPage,
+    title: 'Pros y Cons con stream',
+    description: 'Stream de mensajes',
+    component: DiscusserStreamPage,
   },
   {
     to: '/translate',

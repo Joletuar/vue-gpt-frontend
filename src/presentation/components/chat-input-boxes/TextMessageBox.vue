@@ -20,7 +20,19 @@
     </div>
 
     <div class="ml-4">
-      <button class="btn-primary">
+      <template v-if="isStream">
+        <button type="button" class="btn-stop" v-if="disableButton" @click="handleAbort">
+          <span class="mr-2">Parar</span>
+          <i class="fa-solid fa-stop"></i>
+        </button>
+
+        <button type="submit" class="btn-primary" v-else>
+          <span class="mr-2">Enviar</span>
+          <i class="fa-regular fa-paper-plane"></i>
+        </button>
+      </template>
+
+      <button type="submit" class="btn-primary" v-else :disabled="disableButton">
         <span class="mr-2">Enviar</span>
         <i class="fa-regular fa-paper-plane"></i>
       </button>
@@ -34,14 +46,19 @@ import { ref } from 'vue'
 interface Props {
   placeholder?: string
   disableCorrections?: boolean
+  disableButton?: boolean
+  isStream?: boolean
 }
 
 withDefaults(defineProps<Props>(), {
   disableCorrections: false,
+  disableButton: false,
+  isStream: false,
 })
 
 const emits = defineEmits<{
   sendMessage: [message: string]
+  abortStream: []
 }>()
 
 const message = ref<string>('')
@@ -52,5 +69,9 @@ const handleSendMessage = () => {
   emits('sendMessage', message.value)
 
   message.value = ''
+}
+
+const handleAbort = () => {
+  emits('abortStream')
 }
 </script>
