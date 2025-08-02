@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 
 import DashboardLayout from '../layouts/DashboardLayout.vue'
-import ProsConsPage from '../pages/pros-cons/ProsConsPage.vue'
+import DiscusserPage from '../pages/discusser/DiscusserPage.vue'
 import ProsConsStreamPage from '../pages/pros-cons-stream/ProsConsStreamPage.vue'
 import TranslatePage from '../pages/translate/TranslatePage.vue'
 import TextToAudioPage from '../pages/text-to-audio/TextToAudioPage.vue'
@@ -20,11 +20,11 @@ export const menuRoutes = [
     component: OrthographyPage,
   },
   {
-    to: '/pros-cons',
+    to: '/discusser',
     icon: 'fa-solid fa-code-compare',
     title: 'Pros & Cons',
     description: 'Comparar pros y contras',
-    component: ProsConsPage,
+    component: DiscusserPage,
   },
   {
     to: '/pros-cons-stream',
