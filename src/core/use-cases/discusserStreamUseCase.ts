@@ -1,4 +1,4 @@
-export const discusserStreamUseCase = async (prompt: string, abortSignal: AbortSignal) => {
+export async function* discusserStreamUseCase(prompt: string, abortSignal: AbortSignal) {
   try {
     const res = await fetch(`${import.meta.env['VITE_BASE_API_URL']}/api/v1/discusser/stream`, {
       method: 'POST',
@@ -15,7 +15,17 @@ export const discusserStreamUseCase = async (prompt: string, abortSignal: AbortS
 
     if (!reader) throw new Error('No se pudo crear el reader')
 
-    return reader
+    const decoder = new TextDecoder()
+
+    while (true) {
+      const { done, value } = await reader.read()
+
+      if (done) break
+
+      yield decoder.decode(value)
+    }
+
+    reader.releaseLock()
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
       throw error

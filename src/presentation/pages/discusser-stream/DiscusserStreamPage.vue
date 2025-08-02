@@ -1,6 +1,6 @@
 <template>
   <div class="chat-container">
-    <div class="chat-messages">
+    <div class="chat-messages" ref="chatMessagesRef">
       <div class="grid grid-cols-12 gap-y-2">
         <!-- Bienvenida -->
         <GptMessage
@@ -21,18 +21,18 @@
     </div>
 
     <TextMessageBox
+      placeholder="Escribe aquí lo que deseas"
       @sendMessage="handlePost"
       @abortStream="handleAbort"
-      placeholder="Escribe aquí lo que deseas"
-      :disableCorrections="true"
       :disableButton="disableButton"
+      :disableCorrections="true"
       :isStream="true"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { nextTick, reactive, ref, watch } from 'vue'
 
 import GptMessage from '../../components/chat-bubbles/GptMessage.vue'
 import MyMessage from '../../components/chat-bubbles/MyMessage.vue'
@@ -49,6 +49,7 @@ interface Message {
 const isLoading = ref(false)
 const messages = reactive<Message[]>([])
 const disableButton = ref(false)
+const chatMessagesRef = ref<HTMLElement | null>(null)
 let abortController: AbortController | null = null
 
 const handlePost = async (text: string) => {
@@ -60,27 +61,20 @@ const handlePost = async (text: string) => {
   const abortSignal = abortController.signal
 
   try {
-    const reader = await discusserStreamUseCase(text, abortSignal)
-    isLoading.value = false
+    const stream = discusserStreamUseCase(text, abortSignal)
 
-    if (!reader) return
-
-    const decoder = new TextDecoder()
     const currentId = crypto.randomUUID()
-    messages.push({ id: currentId, text: '', isGpt: true })
 
-    while (true) {
-      if (!reader) break
-
-      const { done, value } = await reader.read()
-
-      if (done) break
-
-      const decoded = decoder.decode(value)
-
+    for await (const chunk of stream) {
       const currentMessage = messages.find((m) => m.id === currentId)
 
-      if (currentMessage) currentMessage.text += decoded
+      if (currentMessage) {
+        currentMessage.text += chunk
+
+        continue
+      }
+
+      messages.push({ id: currentId, text: chunk, isGpt: true })
     }
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
@@ -89,12 +83,11 @@ const handlePost = async (text: string) => {
       return
     }
 
-    isLoading.value = false
-
     console.error('Error en el stream:', error)
   } finally {
     disableButton.value = false
     abortController = null
+    isLoading.value = false
   }
 }
 
@@ -106,4 +99,22 @@ const handleAbort = () => {
     disableButton.value = false
   }
 }
+
+watch(
+  messages,
+  async () => {
+    await nextTick()
+
+    if (chatMessagesRef.value) {
+      chatMessagesRef.value.scrollTo({
+        top: chatMessagesRef.value.scrollHeight,
+        behavior: 'smooth',
+      })
+    }
+  },
+  /**
+   * Usar la opción 'deep: true' es necesario cuando se observa un objeto reactivo o un array, ya que permite detectar y reaccionar a cambios en sus propiedades internas o elementos anidados.
+   */
+  { deep: true },
+)
 </script>
