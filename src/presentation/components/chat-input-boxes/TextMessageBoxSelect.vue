@@ -31,7 +31,7 @@
     </div>
 
     <div class="ml-4">
-      <button class="btn-primary">
+      <button class="btn-primary" :disabled="disableButton">
         <span class="mr-2">Enviar</span>
         <i class="fa-regular fa-paper-plane"></i>
       </button>
@@ -45,6 +45,7 @@ interface Props {
   placeholder?: string
   disableCorrections?: boolean
   options: Option[]
+  disableButton?: boolean
 }
 
 interface Option {
@@ -56,12 +57,13 @@ const emit = defineEmits<{
   sendMessage: [message: string, selectedOption: string]
 }>()
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   disableCorrections: false,
+  disableButton: false,
 })
 
 const message = ref<string>('')
-const selectedOption = ref<string>('')
+const selectedOption = ref<string>(props.options[0]?.id || '')
 
 const handleSendMessage = () => {
   if (message.value.trim().length === 0) return

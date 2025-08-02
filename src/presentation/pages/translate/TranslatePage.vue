@@ -9,42 +9,6 @@
                   Actualmente, el idioma seleccionado es Inglés.`"
         />
 
-        <!-- Selector de idioma -->
-        <div class="relative w-full max-w-xs mx-auto my-4">
-          <label for="language-select" class="text-sm font-semibold mb-1 flex items-center gap-2">
-            Idioma
-          </label>
-
-          <div class="relative">
-            <select
-              id="language-select"
-              class="block w-full pl-4 pr-10 py-2 text-base border border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500 rounded-lg shadow-sm transition duration-200 bg-white/10 appearance-none hover:border-indigo-400"
-              v-model="selectedLanguage"
-            >
-              <option
-                class="text-gray-700 hover:bg-indigo-50"
-                v-for="language in languages"
-                :key="language.id"
-                :value="language.id"
-              >
-                {{ language.text }}
-              </option>
-            </select>
-
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-              <svg
-                class="w-5 h-5 text-indigo-400"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
         <!-- Mensajes -->
         <template v-for="(message, index) in messages" :key="index">
           <GptMessage v-if="message.isGpt" :text="message.text" />
@@ -58,10 +22,11 @@
       </div>
     </div>
 
-    <TextMessageBox
+    <TextMessageBoxSelect
       @sendMessage="handlePost"
       placeholder="Escribe aquí lo que deseas"
       :disableCorrections="true"
+      :options="languages"
     />
   </div>
 </template>
@@ -71,9 +36,9 @@ import { ref } from 'vue'
 
 import GptMessage from '../../components/chat-bubbles/GptMessage.vue'
 import MyMessage from '../../components/chat-bubbles/MyMessage.vue'
-import TextMessageBox from '../../components/chat-input-boxes/TextMessageBox.vue'
 import TypingLoader from '../../components/loaders/TypingLoader.vue'
 import { translationUseCase } from '@/core/use-cases/translationUseCase'
+import TextMessageBoxSelect from '@/presentation/components/chat-input-boxes/TextMessageBoxSelect.vue'
 
 interface Message {
   text: string
@@ -94,15 +59,13 @@ const languages = [
   { id: 'mandarín', text: 'Mandarín' },
   { id: 'portugués', text: 'Portugués' },
   { id: 'ruso', text: 'Ruso' },
-] as const
+]
 
-const selectedLanguage = ref<(typeof languages)[number]['id']>(languages[0].id)
-
-const handlePost = async (text: string) => {
+const handlePost = async (text: string, selectedLanguage: string) => {
   isLoading.value = true
   messages.value.push({ text: text, isGpt: false })
 
-  const resp = await translationUseCase(text, selectedLanguage.value)
+  const resp = await translationUseCase(text, selectedLanguage)
   messages.value.push({ text: resp.text, isGpt: true })
   isLoading.value = false
 }
