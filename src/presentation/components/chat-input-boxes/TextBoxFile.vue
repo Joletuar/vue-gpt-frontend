@@ -3,7 +3,7 @@
     @submit.prevent="handleSendMessage"
     class="flex flex-row items-center h-16 rounded-xl bg-white w-full px-4"
   >
-    <div class="mr-3">
+    <div class="mr-3 flex-grow flex">
       <button
         type="button"
         class="flex items-center justify-center text-gray-400 hover:text-gray-600 cursor-pointer"
@@ -13,28 +13,17 @@
       </button>
 
       <input type="file" ref="inputFileRef" :accept="accept" hidden @change="handleFile" />
-    </div>
-
-    <div class="flex-grow">
-      <div class="relative w-full">
-        <input
-          type="text"
-          autoFocus
-          name="message"
-          class="flex w-full border rounded-xl text-gray-800 focus:outline-none focus:border-indigo-300 pl-4 h-10"
-          :placeholder="placeholder"
-          :autoComplete="disableCorrections ? 'on' : 'off'"
-          :autoCorrect="disableCorrections ? 'on' : 'off'"
-          :spellCheck="disableCorrections ? 'true' : 'false'"
-          v-model="message"
-        />
-      </div>
+      <span
+        class="text-gray-700 ml-2 border-2 border-gray-300 px-3 py-1 rounded-md"
+        v-if="selectedFile"
+      >
+        {{ selectedFile.name.substring(0, 150) + '...' }}
+      </span>
     </div>
 
     <div class="ml-4">
       <button class="btn-primary cursor-pointer" :disabled="!selectedFile || disableButton">
-        <span class="mr-2" v-if="!selectedFile">Enviar</span>
-        <span class="mr-2" v-else> {{ selectedFile.name.substring(0, 10) + '...' }} </span>
+        <span class="mr-2">Enviar</span>
         <i class="fa-regular fa-paper-plane"></i>
       </button>
     </div>
@@ -57,19 +46,18 @@ withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  sendMessage: [message: string]
+  sendFile: [file: File]
 }>()
 
-const message = ref<string>('')
 const selectedFile = ref<File | null>(null)
 const inputFileRef = ref<HTMLInputElement | null>(null)
 
 const handleSendMessage = () => {
-  if (message.value.trim().length === 0) return
+  if (!selectedFile.value) return
 
-  emit('sendMessage', message.value)
+  emit('sendFile', selectedFile.value)
 
-  message.value = ''
+  selectedFile.value = null
 }
 
 const handleFile = (e: Event) => {
