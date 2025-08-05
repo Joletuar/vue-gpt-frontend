@@ -23,6 +23,7 @@
       placeholder="Escribe aquí lo que deseas"
       :disableCorrections="true"
       :disableButton="isLoading"
+      accept="audio/*"
     />
   </div>
 </template>
