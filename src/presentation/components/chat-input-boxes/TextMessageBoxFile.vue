@@ -58,6 +58,7 @@ withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   sendMessage: [message: string]
+  loadFile: [file: File]
 }>()
 
 const message = ref<string>('')
@@ -76,6 +77,10 @@ const handleFile = (e: Event) => {
   const target = e.target as HTMLInputElement
 
   selectedFile.value = target.files?.item(0) ?? null
+
+  if (selectedFile.value) {
+    emit('loadFile', selectedFile.value)
+  }
 }
 
 const handleFileClick = () => {

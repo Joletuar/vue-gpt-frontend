@@ -5,3 +5,7 @@ export interface GenerateImageResponse {
 export interface GenerateImage extends GenerateImageResponse {
   ok: boolean
 }
+
+export type EditImageResponse = GenerateImageResponse
+
+export type EditImage = GenerateImage
