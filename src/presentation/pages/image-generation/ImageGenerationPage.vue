@@ -43,7 +43,6 @@ import MyMessage from '../../components/chat-bubbles/MyMessage.vue'
 import TextMessageBox from '../../components/chat-input-boxes/TextMessageBox.vue'
 import TypingLoader from '../../components/loaders/TypingLoader.vue'
 import { generateImageUseCase } from '@/core/use-cases/generateImageUseCase'
-import { getImage } from '@/core/use-cases/getImageUseCase'
 
 interface Message {
   text: string
@@ -64,14 +63,7 @@ const handlePost = async (text: string) => {
     text: `Se ha generado tu imagen correctamente con el siguiente ID: ${imageId}`,
   })
 
-  const imageChunks: Uint8Array[] = []
-  const chunks = getImage(imageId)
-  for await (const chunk of chunks) {
-    imageChunks.push(chunk)
-  }
-
-  const imageBlob = new Blob(imageChunks, { type: 'imge/png' })
-  imageUrl.value = URL.createObjectURL(imageBlob)
+  imageUrl.value = `${import.meta.env['VITE_BASE_API_URL']}/api/v1/image/${imageId}`
 
   isLoading.value = false
 }
